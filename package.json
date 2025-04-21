@@ -1,0 +1,24 @@
+{
+  "name": "shrink",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "baml:build": "baml-cli generate",
+    "baml:dev": "baml-cli dev",
+    "build": "npm run baml:build && tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc -w & node --watch dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:baml": "baml-cli test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@boundaryml/baml": "^0.84.4",
+    "@types/node": "^22.14.1",
+    "commander": "^13.1.0",
+    "typescript": "^5.8.3"
+  }
+}
