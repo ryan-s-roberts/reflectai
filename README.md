@@ -23,10 +23,9 @@ flowchart TD
     D --> G(4. GenerateTimelineData);
     F --> G;
     G --> H{TimelineData};
-    subgraph Report Generation (CLI)
-      F & H --> K[Assemble report.md];
-    end
-    K --> L[Output: report.md]
+    F --> K[Assemble report.md];
+    H --> K;
+    K --> L[Output: report.md];
 ```
 
 ## Prerequisites
