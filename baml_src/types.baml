@@ -1,18 +1,17 @@
 // -------- Core Data Types --------
 
 enum SpeakerType {
-  PATIENT @alias("k1") @description("The person receiving therapy")
-  THERAPIST @alias("k2") @description("The person providing therapy")
+  PATIENT @alias("PATIENT") @description("The person receiving therapy")
+  THERAPIST @alias("THERAPIST") @description("The person providing therapy")
 }
 
 enum EventSourceType {
-  AUDIO_EMOTION @alias("m1") @description("Emotion inferred from vocal tone")
-  AUDIO_SPEECH_FEATURES @alias("m2") @description("Characteristics like speech rate, pitch, pauses")
-  FACIAL_EXPRESSION @alias("m3") @description("Detected facial muscle movements (e.g., smile, frown, Action Units)")
-  BODY_POSE_GESTURE @alias("m4") @description("Posture changes, fidgeting, hand movements")
-  GAZE_DIRECTION @alias("m5") @description("Direction the person is looking")
-  PHYSIOLOGICAL_SENSOR @alias("m6") @description("Data from sensors like heart rate, GSR (if applicable)")
-  VISUAL_ANALYSIS @alias("m7") @description("Observations inferred from images/video analysis (e.g., specific expressions, gestures)")
+  AUDIO_EMOTION @alias("AUDIO_EMOTION") @description("Emotion inferred from vocal tone")
+  AUDIO_SPEECH_FEATURES @alias("AUDIO_SPEECH_FEATURES") @description("Characteristics like speech rate, pitch, pauses")
+  FACIAL_EXPRESSION @alias("FACIAL_EXPRESSION") @description("Detected facial muscle movements (e.g., smile, frown, Action Units)")
+  BODY_POSE_GESTURE @alias("BODY_POSE_GESTURE") @description("Posture changes, fidgeting, hand movements")
+  GAZE_DIRECTION @alias("GAZE_DIRECTION") @description("Direction the person is looking")
+  VISUAL_ANALYSIS @alias("VISUAL_ANALYSIS") @description("Observations inferred from images/video analysis (e.g., specific expressions, gestures)")
 }
 
 class ModalityEvent {

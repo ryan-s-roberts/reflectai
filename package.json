@@ -1,5 +1,5 @@
 {
-  "name": "shrink",
+  "name": "reflectai",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
@@ -11,14 +11,24 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:baml": "baml-cli test"
   },
-  "keywords": [],
+  "keywords": [
+    "baml",
+    "ai",
+    "therapy",
+    "analysis",
+    "synthesis"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "AI-powered therapy session analysis and synthesis tools using BAML.",
   "devDependencies": {
     "@boundaryml/baml": "^0.84.4",
+    "@types/lodash": "^4.17.16",
     "@types/node": "^22.14.1",
     "commander": "^13.1.0",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }

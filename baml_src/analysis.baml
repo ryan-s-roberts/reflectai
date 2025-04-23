@@ -63,7 +63,7 @@ function AnalyzeVisualInput(
 ) -> TurnSpecificVisualEvents[] {
   client CustomSonnet // Changed from CustomGPT4o
   prompt #"""
-    Act as an **objective visual observation model**. Your task is to analyze the provided patient images in the context of their corresponding dialogue turns and associated modality events. Generate new modality events describing **specific, observable visual behaviors**.
+    Act as an **objective visual observation model**. Your task is to analyze the provided patient images in the context of their corresponding dialogue turns and associated modality events. Generate new modality events describing **meaningful visual observations grounded in the image**.
 
     Background Context:
     {{ background_context }}
@@ -82,10 +82,11 @@ function AnalyzeVisualInput(
         *   Analyze the visual content of the image(s) for that turn.
         *   **Reasoning:** Consider how the patient's visual behavior might relate to the **immediately preceding THERAPIST turn** or earlier dialogue. Note this reasoning briefly, but focus generated events on direct observation.
     2.  **Generate Visual Events:** For each patient turn analyzed, create a list of new `ModalityEvent` objects:
-        *   Use the `description` field to detail **specific, observable visual behaviors**...
-        *   Assign a plausible `confidence` score...
-    3.  Focus ONLY on generating `ModalityEvent` objects describing visual observations.
-    4.  **Structure Output:** For each `turn_index` processed that has generated visual events, create a `TurnSpecificVisualEvents` object containing that `turn_index` and the corresponding list of generated `ModalityEvent` objects (`visual_events`). Output the final result as a list of these `TurnSpecificVisualEvents` objects. Adhere strictly to the BAML schema.
+        *   Set the `source` to `VISUAL_ANALYSIS`.
+        *   Use the `description` field to detail **meaningful observations based on visual cues in the image**, considering the dialogue context. Descriptions should be **objective but can integrate multiple related visual elements** (e.g., posture, gaze, expression) to describe the patient's overall visual presentation during that turn (e.g., "Leans back, arms crossed, looking away", "Nods slowly while maintaining eye contact"). Avoid subjective interpretations of emotion unless directly observable (e.g., prefer "Corners of mouth turned down" over "Looks sad").
+        *   Assign a plausible `confidence` score for the observation based on the clarity of the visual evidence in the image.
+    3.  Focus ONLY on generating `ModalityEvent` objects describing visual observations with `source: VISUAL_ANALYSIS`.
+    4.  **Structure Output:** For each `turn_index` processed that has generated visual events, create a `TurnSpecificVisualEvents` object containing that `turn_index` and the corresponding list of generated `ModalityEvent` objects (`visual_events`). Output the final result as a list of these `TurnSpecificVisualEvents` objects. Adhere strictly to the BAML schema defined by `{{ ctx.output_format }}`.
 
     {{ ctx.output_format }} // Should be format for list<TurnSpecificVisualEvents>
 
@@ -134,5 +135,57 @@ function AnalyzeSessionMultimodal(
     [LLM outlines its analysis plan here...]
 
     Structured Session Analysis:
+  """#
+} 
+
+// -------- Timeline Data Structures --------
+class TimelineEvent {
+  turn_index int @description("The primary turn index this event relates to.")
+  speaker SpeakerType @description("The speaker of the turn (PATIENT or THERAPIST).")
+  summary string @description("A very brief (1-7 words) summary of the turn's content or significance.")
+  markers string[]? @description("Optional short markers for modality events, key moments, or observations (e.g., 'KM: Insight', 'Gaze: Down', 'TO: Validation').")
+}
+
+class TimelineSection {
+  title string @description("Title for this section of the timeline (e.g., 'Opening', 'Exploration', 'Closing').")
+  events TimelineEvent[] @description("An ordered list of timeline events within this section.")
+}
+
+class TimelineData {
+  title string @description("Overall title for the timeline diagram.")
+  sections TimelineSection[] @description("An ordered list of sections comprising the timeline.")
+}
+
+// -------- Reporting Utility Function --------
+
+// Function to generate STRUCTURED timeline data based on session dialogue and analysis.
+function GenerateTimelineData( // Renamed for clarity
+  dialogue: Dialogue @description("The full dialogue session transcript with all modality events."),
+  analysis: SessionAnalysis @description("The structured analysis output from AnalyzeSessionMultimodal.")
+) -> TimelineData @description("Structured data representing the session timeline.") {
+  client CustomSonnet
+  prompt #"""
+    Act as a report generation assistant. Your task is to create structured timeline data summarizing a therapy session based on the provided dialogue and its structured analysis. Output the data according to the `TimelineData` schema.
+
+    Input Dialogue:
+    {{ dialogue | tojson }}
+
+    Input Session Analysis:
+    {{ analysis | tojson }}
+
+    Instructions:
+    1.  **Goal:** Produce structured data representing the session flow, suitable for later rendering into a timeline chart. Adhere strictly to the `TimelineData` schema.
+    2.  **Overall Structure:** Define an overall `title` for the timeline (e.g., "Therapy Session Flow"). Divide the session into logical `sections` (e.g., 'Opening', 'Exploration', 'Working Through', 'Closing', or based on major theme shifts). Assign a `title` to each section.
+    3.  **Events within Sections:** For each `DialogueTurn` in the input `dialogue`, create a corresponding `TimelineEvent` and place it in the appropriate section:
+        *   Set `turn_index` and `speaker`.
+        *   Create a concise `summary` (1-7 words max) capturing the essence of the turn's utterance.
+        *   Populate the `markers` array with short strings indicating relevant findings from the `analysis` or salient `events` for that turn. Check `analysis.key_moments`, `analysis.therapeutic_observations`, and high-confidence `dialogue.turns[i].events`. Examples: "KM: Insight", "TO: Reframing", "Anxiety ↑", "Gaze: Down". Keep markers very brief. Use 0-3 markers per event.
+    4.  **Ordering:** Ensure sections and events within sections maintain the original chronological order of the dialogue.
+    5.  **Output Format:** Generate ONLY the JSON object conforming to the `TimelineData` schema defined by `{{ ctx.output_format }}`.
+
+    {{ ctx.output_format }}
+
+    Structured Timeline Data Output:
+    [LLM generates the JSON object conforming to TimelineData structure here]
   """#
 } 

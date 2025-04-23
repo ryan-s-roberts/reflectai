@@ -19,8 +19,9 @@ client<llm> CustomGPT4oMini {
 
 client<llm> CustomSonnet {
   provider anthropic
+  retry_policy Exponential
   options {
-    model "claude-3-5-sonnet-20241022"
+    model "claude-3-5-sonnet-20240620"
     api_key env.ANTHROPIC_API_KEY
   }
 }

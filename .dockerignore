@@ -1,0 +1,38 @@
+# Git files
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# BAML generated client (built inside container)
+src/baml_client
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo 
